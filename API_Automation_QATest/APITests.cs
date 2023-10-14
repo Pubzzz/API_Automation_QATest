@@ -8,9 +8,10 @@ using Xunit;
 //using AutoFixture;
 //using AutoFixture.Xunit2;
 using System.Collections.Generic;
-
+using Xunit.Extensions.Ordering;
 namespace API_Automation_QATest
 {
+    [Collection("Sequential")]
     public class APITests
     {
         private readonly HttpClient _client;
@@ -21,7 +22,7 @@ namespace API_Automation_QATest
             _client = new HttpClient();
             _client.BaseAddress = new Uri("https://api.restful-api.dev/");
         }
-
+        [Order(1)]
         [Fact]
         public async Task Test_GetAllObjects()
         {
@@ -35,7 +36,7 @@ namespace API_Automation_QATest
                 Assert.True(false, ex.Message);
             }
         }
-
+        [Order(2)]
         [Fact]
         public async Task Test_GetListofObjectsByIds()
         {
@@ -54,7 +55,7 @@ namespace API_Automation_QATest
                 Assert.True(false, ex.Message);
             }
         }
-
+        [Order(3)]
         [Fact]
         public async Task Test_GetSingleObjectById()
         {
@@ -71,7 +72,7 @@ namespace API_Automation_QATest
             }
         }
 
-
+        [Order(4)]
         [Fact]
         public async Task Test_AddObject()
         {
@@ -100,12 +101,14 @@ namespace API_Automation_QATest
             }
         }
 
-
+        [Order(5)]
         [Fact]
         public async Task Test_UpdateObject()
         {
             try
             {
+                NewObjectid = "ff8081818b1b4123018b2f35f8da1bcb";
+
                 var json = "{\"name\":\"Sample Name EDITED\",\"data\":{\"year\":2024,\"price\":2001.00,\"CPU model\":\"Intel Core i10\",\"Hard disk size\":\"2 TB\"}}";
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
@@ -127,12 +130,14 @@ namespace API_Automation_QATest
                 Assert.True(false, ex.Message);
             }
         }
-
+        [Order(6)]
         [Fact]
         public async Task Test_UpdateObjectPartially()
         {
             try
             {
+                NewObjectid = "ff8081818b1b4123018b2f35f8da1bcb";
+
                 var json = "{\"name\": \"Sample Name EDITED AGAIN\"}";
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
@@ -153,12 +158,14 @@ namespace API_Automation_QATest
                 Assert.True(false, ex.Message);
             }
         }
-
+        [Order(7)]
         [Fact]
         public async Task Test_DeleteObject()
         {
             try
             {
+                NewObjectid = "ff8081818b1b4123018b2f35f8da1bcb";
+
                 var response = await _client.DeleteAsync($"objects/{NewObjectid}");
                 response.EnsureSuccessStatusCode();
 
