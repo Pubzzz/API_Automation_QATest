@@ -34,10 +34,27 @@ namespace API_Automation_QATest
         }
 
         [Fact]
+        public async Task Test_GetListofObjectsByIds()
+        {
+            // Arrange
+            int objectId1 = 3;
+            int objectId2 = 5;
+            int objectId3 = 10;
+
+            // Act
+            var response = await _client.GetAsync($"objects/?id={objectId1}&id={objectId2}&id={objectId3}");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            // Add more assertions as needed for the response content.
+            Console.WriteLine("Test Executed");
+        }
+
+        [Fact]
         public async Task Test_GetSingleObjectById()
         {
             // Arrange
-            int objectId = 1;
+            int objectId = 7;
 
             // Act
             var response = await _client.GetAsync($"objects/{objectId}");
@@ -76,11 +93,28 @@ namespace API_Automation_QATest
         }
 
         [Fact]
+        public async Task Test_UpdateObject()
+        {
+            // Arrange
+            int objectId = NewObjectid;
+            var json = "{\"name\":\"Sample Name EDITED\",\"data\":{\"year\":2024,\"price\":2001.00,\"CPU model\":\"Intel Core i10\",\"Hard disk size\":\"2 TB\"}}";
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            // Act
+            var response = await _client.PutAsync($"objects/{objectId}", content);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            // Add more assertions as needed for the response content.
+            Console.WriteLine("Test Executed");
+        }
+
+        [Fact]
         public async Task Test_UpdateObjectPartially()
         {
             // Arrange
             int objectId = NewObjectid;
-            var json = "{\"name\": \"Sample Name EDITED\"";
+            var json = "{\"name\": \"Sample Name EDITED AGAIN\"";
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             // Act
@@ -96,7 +130,7 @@ namespace API_Automation_QATest
         public async Task Test_DeleteObjectUsingDelete()
         {
             // Arrange
-            int objectId = 1;
+            int objectId = NewObjectid;
 
             // Act
             var response = await _client.DeleteAsync($"objects/{objectId}");
