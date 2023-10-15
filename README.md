@@ -25,30 +25,31 @@ Before you begin, ensure you have the following prerequisites installed:
    ```shell
    git clone https://github.com/Pubzzz/API_Automation_QATest.git
 
-Building the Project
-Open the project in Visual Studio or your preferred C# development environment.
+## Building the Project
 
-Build the project by selecting "Build" from the menu or using the keyboard shortcut (e.g., F6).
+1. Open the project in Visual Studio or your preferred C# development environment.
 
-Running the Tests
-The project contains a set of automated tests that can be executed to test the API. To run the tests:
+2. Build the project by selecting "Build" from the menu or using the keyboard shortcut (e.g., F6).
 
-Open the Test Explorer in Visual Studio by selecting "Test" > "Test Explorer" from the menu.
+## Running the Tests
+1. The project contains a set of automated tests that can be executed to test the API. To run the tests:
 
-In the Test Explorer, you will see a list of available tests.
+2. Open the Test Explorer in Visual Studio by selecting "Test" > "Test Explorer" from the menu.
 
-Click the "Run All" button to execute all the tests.
+3. In the Test Explorer, you will see a list of available tests.
+
+4. Click the "Run All" button to execute all the tests.
 
 Note: You can also run tests individually by right-clicking on a specific test and selecting "Run Selected Tests."
 The test results will be displayed in the Test Explorer, showing which tests passed or failed.
 
-Test Configuration
+## Test Configuration
 In the project code, the API endpoints are mocked using the Moq library. You can configure the mock responses for each API request in the test methods. For details, please refer to the code comments and the Moq library documentation.
 
-Contributing
+## Contributing
 If you would like to contribute to this project, feel free to fork the repository, make your changes, and create a pull request.
 
-License
+## License
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 Acknowledgments
