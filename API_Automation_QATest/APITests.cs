@@ -72,14 +72,26 @@ namespace API_Automation_QATest
             }
         }
 
-        [Order(4)]
-        [Fact]
-        public async Task Test_AddObject()
+        [Theory]
+        [InlineData("Sample Name", 2023, 2000.00, "Intel Core i9", "1 TB")]
+        [InlineData("Another Sample Name", 2022, 1800.00, "AMD Ryzen", "512 GB")]
+        public async Task Test_AddObject(
+    string name, int year, decimal price, string cpuModel, string hardDiskSize)
         {
             try
             {
-                var jsonData = "{\"name\":\"Sample Name\",\"data\":{\"year\":2023,\"price\":2000.00,\"CPU model\":\"Intel Core i9\",\"Hard disk size\":\"1 TB\"}}";
-                var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+                var jsonData = new
+                {
+                    name = name,
+                    data = new
+                    {
+                        year = year,
+                        price = price,
+                        CPUModel = cpuModel,
+                        HardDiskSize = hardDiskSize
+                    }
+                };
+                var content = new StringContent(JsonConvert.SerializeObject(jsonData), Encoding.UTF8, "application/json");
 
                 var response = await _client.PostAsync("objects", content);
                 response.EnsureSuccessStatusCode();
@@ -87,13 +99,11 @@ namespace API_Automation_QATest
                 var responseContent = await response.Content.ReadAsStringAsync();
                 var responseObject = JsonConvert.DeserializeObject<ApiResponse>(responseContent);
 
-                NewObjectid = responseObject.id;
-
-                Assert.Equal("Sample Name", responseObject.name);
-                Assert.Equal(2023, responseObject.data.year);
-                Assert.Equal(2000.00m, responseObject.data.price);
-                Assert.Equal("Intel Core i9", responseObject.data.CPUModel);
-                Assert.Equal("1 TB", responseObject.data.HardDiskSize);
+                Assert.Equal(name, responseObject.name);
+                Assert.Equal(year, responseObject.data.year);
+                Assert.Equal(price, responseObject.data.price);
+                Assert.Equal(cpuModel, responseObject.data.CPUModel);
+                Assert.Equal(hardDiskSize, responseObject.data.HardDiskSize);
             }
             catch (HttpRequestException ex)
             {
@@ -101,80 +111,161 @@ namespace API_Automation_QATest
             }
         }
 
-        [Order(5)]
-        [Fact]
-        public async Task Test_UpdateObject()
+
+        [Theory]
+        [InlineData("Sample Name", "Sample Name EDITED", 2023, 2024, 2000.00, 2001.00, "Intel Core i9", "Intel Core i10", "1 TB", "2 TB")]
+        [InlineData("Another Name", "Another Name EDITED", 2022, 2025, 1800.00, 1900.00, "AMD Ryzen", "AMD Ryzen 2", "512 GB", "1 TB")]
+        public async Task Test_UpdateObject(
+    string originalName, string updatedName, int originalYear, int updatedYear,
+    decimal originalPrice, decimal updatedPrice, string originalCpuModel,
+    string updatedCpuModel, string originalHardDiskSize, string updatedHardDiskSize)
         {
             try
             {
-                NewObjectid = "ff8081818b1b4123018b2f35f8da1bcb";
+                var originalJsonData = new
+                {
+                    name = originalName,
+                    data = new
+                    {
+                        year = originalYear,
+                        price = originalPrice,
+                        CPUModel = originalCpuModel,
+                        HardDiskSize = originalHardDiskSize
+                    }
+                };
+                var originalContent = new StringContent(JsonConvert.SerializeObject(originalJsonData), Encoding.UTF8, "application/json");
 
-                var json = "{\"name\":\"Sample Name EDITED\",\"data\":{\"year\":2024,\"price\":2001.00,\"CPU model\":\"Intel Core i10\",\"Hard disk size\":\"2 TB\"}}";
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                var response = await _client.PutAsync($"objects/{NewObjectid}", content);
+                var response = await _client.PostAsync("objects", originalContent);
                 response.EnsureSuccessStatusCode();
-
 
                 var responseContent = await response.Content.ReadAsStringAsync();
                 var responseObject = JsonConvert.DeserializeObject<ApiResponse>(responseContent);
 
-                Assert.Equal("Sample Name EDITED", responseObject.name);
-                Assert.Equal(2024, responseObject.data.year);
-                Assert.Equal(2001.00m, responseObject.data.price);
-                Assert.Equal("Intel Core i10", responseObject.data.CPUModel);
-                Assert.Equal("2 TB", responseObject.data.HardDiskSize);
+                NewObjectid = responseObject.id;
+
+                var updatedJsonData = new
+                {
+                    name = updatedName,
+                    data = new
+                    {
+                        year = updatedYear,
+                        price = updatedPrice,
+                        CPUModel = updatedCpuModel,
+                        HardDiskSize = updatedHardDiskSize
+                    }
+                };
+                var updatedContent = new StringContent(JsonConvert.SerializeObject(updatedJsonData), Encoding.UTF8, "application/json");
+
+                var updateResponse = await _client.PutAsync($"objects/{NewObjectid}", updatedContent);
+                updateResponse.EnsureSuccessStatusCode();
+
+                var updateResponseContent = await updateResponse.Content.ReadAsStringAsync();
+                var updateResponseObject = JsonConvert.DeserializeObject<ApiResponse>(updateResponseContent);
+
+                Assert.Equal(updatedName, updateResponseObject.name);
+                Assert.Equal(updatedYear, updateResponseObject.data.year);
+                Assert.Equal(updatedPrice, updateResponseObject.data.price);
+                Assert.Equal(updatedCpuModel, updateResponseObject.data.CPUModel);
+                Assert.Equal(updatedHardDiskSize, updateResponseObject.data.HardDiskSize);
             }
             catch (HttpRequestException ex)
-            { 
+            {
                 Assert.True(false, ex.Message);
             }
         }
+
         [Order(6)]
         [Fact]
         public async Task Test_UpdateObjectPartially()
         {
             try
             {
-                NewObjectid = "ff8081818b1b4123018b2f35f8da1bcb";
+                var newJsonObject = new
+                {
+                    name = "Sample Name",
+                    data = new
+                    {
+                        year = 2024,
+                        price = 2001.00,
+                        CPUModel = "Intel Core i10",
+                        HardDiskSize = "2 TB"
+                    }
+                };
 
-                var json = "{\"name\": \"Sample Name EDITED AGAIN\"}";
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var newJson = JsonConvert.SerializeObject(newJsonObject);
+                var newContent = new StringContent(newJson, Encoding.UTF8, "application/json");
 
-                var response = await _client.PutAsync($"objects/{NewObjectid}", content);
-                response.EnsureSuccessStatusCode();
+                var newResponse = await _client.PostAsync("objects", newContent);
+                newResponse.EnsureSuccessStatusCode();
 
-                var responseContent = await response.Content.ReadAsStringAsync();
-                var responseObject = JsonConvert.DeserializeObject<ApiResponse>(responseContent);
+                var newResponseContent = await newResponse.Content.ReadAsStringAsync();
+                var newResponseObject = JsonConvert.DeserializeObject<ApiResponse>(newResponseContent);
 
-                Assert.Equal("Sample Name EDITED AGAIN", responseObject.name);
-                Assert.Equal(2024, responseObject.data.year);
-                Assert.Equal(2001.00m, responseObject.data.price);
-                Assert.Equal("Intel Core i10", responseObject.data.CPUModel);
-                Assert.Equal("2 TB", responseObject.data.HardDiskSize);
+                Assert.NotNull(newResponseObject.id);
+
+                var objectId = newResponseObject.id;
+                var updateJson = new
+                {
+                    name = "Sample Name EDITED AGAIN"
+                };
+
+                var updateContent = new StringContent(JsonConvert.SerializeObject(updateJson), Encoding.UTF8, "application/json");
+
+                var updateResponse = await _client.PutAsync($"objects/{objectId}", updateContent);
+                updateResponse.EnsureSuccessStatusCode();
+
+                var updateResponseContent = await updateResponse.Content.ReadAsStringAsync();
+                var updateResponseObject = JsonConvert.DeserializeObject<ApiResponse>(updateResponseContent);
+
+                Assert.NotNull(updateResponseObject);
+
+                Assert.Equal("Sample Name EDITED AGAIN", updateResponseObject.name);
+
             }
             catch (HttpRequestException ex)
             {
                 Assert.True(false, ex.Message);
             }
         }
-        [Order(7)]
-        [Fact]
-        public async Task Test_DeleteObject()
+
+        [Theory]
+        [InlineData("Sample Name", 2024, 2001.00, "Intel Core i10", "2 TB")]
+        public async Task Test_DeleteObject(string name, int year, decimal price, string cpuModel, string hardDiskSize)
         {
             try
             {
-                NewObjectid = "ff8081818b1b4123018b2f35f8da1bcb";
+                var jsonData = new
+                {
+                    name = name,
+                    data = new
+                    {
+                        year = year,
+                        price = price,
+                        CPUModel = cpuModel,
+                        HardDiskSize = hardDiskSize
+                    }
+                };
 
-                var response = await _client.DeleteAsync($"objects/{NewObjectid}");
+                var Json = JsonConvert.SerializeObject(jsonData);
+                var content = new StringContent(Json, Encoding.UTF8, "application/json");
+
+                var response = await _client.PostAsync("objects", content);
                 response.EnsureSuccessStatusCode();
 
                 var responseContent = await response.Content.ReadAsStringAsync();
                 var responseObject = JsonConvert.DeserializeObject<ApiResponse>(responseContent);
 
-                string message = responseObject.message;
+                var objectId = responseObject.id;
 
-                Assert.Equal($"Object with id = {NewObjectid} has been deleted.", responseObject.message);
+                var deleteResponse = await _client.DeleteAsync($"objects/{objectId}");
+                deleteResponse.EnsureSuccessStatusCode();
+
+                var deleteResponseContent = await deleteResponse.Content.ReadAsStringAsync();
+                var deleteResponseObject = JsonConvert.DeserializeObject<ApiResponse>(deleteResponseContent);
+
+                string message = deleteResponseObject.message;
+
+                Assert.Equal($"Object with id = {objectId} has been deleted.", deleteResponseObject.message);
             }
             catch (HttpRequestException ex)
             {
