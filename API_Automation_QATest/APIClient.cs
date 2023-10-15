@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace API_Automation_QATest
 {
-    class APIClientClass
+    class APIClient
     {
         private readonly HttpClient _httpClient;
 
-        public APIClientClass(HttpClient httpClient)
+        public APIClient(HttpClient httpClient)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         }

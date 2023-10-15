@@ -16,14 +16,10 @@ namespace API_Automation_QATest
         public int year { get; set; }
         public decimal price { get; set; }
 
-        /*the [JsonProperty] attributes in your class will tell the Newtonsoft.Json library to map the 
-         * JSON properties "CPU model" and "Hard disk size" to the 
-         * class properties CPUModel and HardDiskSize, respectively.
-         * */
-        [JsonProperty("CPU model")]
+        [JsonProperty("CPUmodel")]
         public string CPUModel { get; set; }
 
-        [JsonProperty("Hard disk size")]
+        [JsonProperty("Harddisksize")]
         public string HardDiskSize { get; set; }
     }
 }

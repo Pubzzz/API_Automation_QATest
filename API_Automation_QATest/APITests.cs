@@ -16,30 +16,30 @@ namespace API_Automation_QATest
     public class APITests
     {
         private readonly HttpClient _client;
-        private APIClientClass _apiClient;
+        private APIClient _apiClient;
 
         public APITests()
         {
             _client = new HttpClient();
             _client.BaseAddress = new Uri("https://api.restful-api.dev/");
-            _apiClient = new APIClientClass(_client);
+            _apiClient = new APIClient(_client);
         }
 
         [Order(1)]
         [Fact]
         public async Task Test_GetAllObjects()
         {
+
             // Arrange: Create a mock HTTP handler and an HTTP client with the mock handler.
             var mockHttp = new Mock<HttpMessageHandler>();
             var httpClient = new HttpClient(mockHttp.Object);
-            var apiClient = new APIClientClass(httpClient);
+            var apiClient = new APIClient(httpClient);
 
             // Arrange: Set up a mock response for GetAllObjects with an OK status code.
             var expectedApiResponse = new HttpResponseMessage
             {
-                StatusCode = HttpStatusCode.OK,
+                StatusCode = HttpStatusCode.OK
             };
-
             // Arrange: Configure the mock HTTP handler to return the mock response when a request is made.
             mockHttp
                 .Protected()
@@ -80,6 +80,7 @@ namespace API_Automation_QATest
 
         [Theory]
         [InlineAutoData("Sample Name", 2023, 2000.00, "Intel Core i9", "1 TB")]
+        [AutoData]
         public async Task Test_AddObject(
             string name, int year, decimal price, string cpuModel, string hardDiskSize)
         {
@@ -193,8 +194,6 @@ namespace API_Automation_QATest
 
             // Act: Update the object partially
             var updateResponseObject = await _apiClient.UpdateObject(objectId, updateJson);
-
-            // No need to deserialize updateResponseObject since it's an HttpResponseMessage
 
             // Assert
             Assert.NotNull(updateResponseObject);
