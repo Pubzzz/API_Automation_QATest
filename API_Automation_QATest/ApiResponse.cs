@@ -11,10 +11,11 @@ namespace API_Automation_QATest
     public string message { get; set; }
 }
 
-public class DataModel
-{
-    public int year { get; set; }
-    public decimal price { get; set; }
+    public class DataModel
+    {
+        public int year { get; set; }
+        public decimal price { get; set; }
+
         [JsonProperty("CPU model")]
         public string CPUModel { get; set; }
 
