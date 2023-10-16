@@ -49,6 +49,12 @@ namespace API_Automation_QATest
                     ItExpr.IsAny<CancellationToken>()
                 )
                 .ReturnsAsync(expectedApiResponse);
+
+            // Act: Make the HTTP request to GetAllObjects using the API client.
+            var response = await apiClient.GetAllObjects();
+
+            // Assert: Ensure that the HTTP response has a successful status code (OK).
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Order(2)]
